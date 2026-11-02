@@ -9,7 +9,7 @@ import argparse
 # Number of reads per chromosome
 
 
-# Following peer review guidance of breaking code up into functions. Taking functions from psuedocode of lyxxng
+# Following peer review guidance of breaking code up into functions. Taking inspiration on functions from psuedocode of lyxxng
 
 def get_args():
 	'''Function creates and returns argparse object to take in 
@@ -125,7 +125,7 @@ def main():
 	''' Get UMI list then run deduping function '''
 	
 	umi_set = get_umi_list(args.umi)
-	deduping(args.file, args.output, umi_set)
+	deduping(args.file, args.outfile, umi_set)
 	return
 
 if __name__ == "__main__":
