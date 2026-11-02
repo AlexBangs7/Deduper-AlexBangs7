@@ -94,16 +94,28 @@ def deduping(input_file, output_file, umi_set):
 	current_chrom = 0
 	seen_reads = set() # set, each entry is umi, chromosome, strand, and start site
 
+	# Deduping analysis data
+	header_lines = 0
+	uniq_reads = 0
+	uniq_reads_check = 0
+	wrong_umis = 0
+	removed_duplicates = 0
+
 	for line in input:
 		if line.startswith("@"): # indicates header lines
 			output.write(line)
+			header_lines += 1
 			continue
 		UMI, FLAG, chrom, POS, CIGAR = read_alignment(line)
 		if ((FLAG & 4) == 4): # if sequence is unmapped
 			continue
 		if UMI not in umi_set:
+			wrong_umis += 1
 			continue
 		if chrom != current_chrom:
+			print(f"{current_chrom}\t{len(seen_reads)}")
+			uniq_reads_check += len(seen_reads)
+			
 			current_chrom = chrom
 			seen_reads = set()
 
@@ -115,8 +127,16 @@ def deduping(input_file, output_file, umi_set):
 		if current_sequence not in seen_reads:
 			seen_reads.add(current_sequence)
 			output.write(line)
+			uniq_reads += 1
+		else:
+			removed_duplicates +=1
+	
+	print(f"{current_chrom}\t{len(seen_reads)}")
+	uniq_reads_check += len(seen_reads)
+
 	input.close()
 	output.close()
+	print(header_lines, uniq_reads,wrong_umis,removed_duplicates)
 	print("Deduping completed :)")
 
 
@@ -129,7 +149,6 @@ def main():
 	return
 
 if __name__ == "__main__":
-	print("main")
 	main()
 
 ''''
